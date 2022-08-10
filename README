@@ -1,0 +1,17 @@
+Glitch Kittens is a small game created to help me learn pygame.
+Instructions:
+- Use WASD to move around
+- Use E to activate 'boost', giving you 3x speed for 500 ticks, with a cooldown of 1000 ticks
+- Use Q to activate 'slowdown;, making the game run slower for 100 ticks, with a cooldown of 2000 ticks
+- Press ESC to quit
+- Try to survive for as long as possible!
+
+Modifiers:
+- superfast (sf): runs the game at 1000 tps instead of 100
+- superslow (ss): runs the game at 10 tps instead of 100
+- debug (db): prints debug info to the console instead of game messages
+- bigglitches (bg): makes glitches 5x bigger
+- massiveglitches (mg): makes glitches 10x bigger
+- tinyglitches (tg): makes glitches 10x smaller
+- extraglitch (eg): adds an extra glitch at the start of the game
+- noplayer (np): removes the player, for some reason, please do not make this your screensaver
