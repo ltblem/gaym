@@ -1,7 +1,11 @@
-import pygame, random, time
+# Void Kitten - A LetThereBeLemons creation
+# Liscenced under DONT STEAL MY CODE YOU ASSHOLE (DSMCYA)
 
+#! === Import & Init === !#
+import pygame, random, time
 pygame.init()
 
+#! === Varables === !#
 debug = 0
 exitc = 'error'
 boost_tick = -501
@@ -9,6 +13,7 @@ slowdown_tick = -1001
 boost_readymessageon = 1
 slowdown_readymessageon = 1
 
+#! === User Setup === !#
 print('\nMake sure this console is visible during gameplay.')
 print('Use WASD to move, ESC to quit, E to boost, Q to slow time and F to print the current tick.')
 scrw, scrh = input('Enter width [1920]: '), input('Enter height [1080]: ')
@@ -23,6 +28,7 @@ else:
 if 'db' in mods:
     debug = 1
 
+#! === Screen Setup === !#
 if scrw == '':
     scrw = 1920
 else:
@@ -33,10 +39,9 @@ else:
     scrh = int(scrh)
 
 window = pygame.display.set_mode((scrw, scrh))
-
 pygame.display.set_caption('Glitch Kitten')
 
-
+#! === Classes === !#
 class controllable_entity(pygame.sprite.Sprite):
     def __init__(self):
         super(controllable_entity, self).__init__()
@@ -121,7 +126,7 @@ class evil_entity(pygame.sprite.Sprite):
             
         self.surf.fill((random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
 
-
+#! === Game setup === !#
 if not 'np' in mods:
     player = controllable_entity()
 else:
@@ -135,10 +140,12 @@ tick = 0
 
 if debug: print('GAME START TICK: ' + str(tick))
 
+#! === Main Loop === !#
 while game:
     tick += 1
     stick = str(tick) + ': '
-
+    
+    #! === Colour === !#
     if (enemy.speed / 4) > 255:
         redcolor = 255
     else:
@@ -150,8 +157,9 @@ while game:
             bluecolor = player.speed
     else:
         bluecolor = 0
-    
     window.fill((redcolor, 0, bluecolor))
+    
+    #! === Blit === !#
     if not 'np' in mods:
         window.blit(player.surf, player.rect)
     window.blit(enemy.surf, enemy.rect)
@@ -162,6 +170,7 @@ while game:
     if 'eg' in mods:
         window.blit(enemy3.surf, enemy3.rect)
     
+    #! === Powerups === !#
     if boost_tick + 1000 < tick and boost_readymessageon and not debug:
         print(stick + 'BOOST READY')
         boost_readymessageon = 0
@@ -170,6 +179,7 @@ while game:
         print(stick + 'SLOWDOWN READY')
         slowdown_readymessageon = 0
     
+    #! === Input === !#
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game = 0
@@ -202,6 +212,7 @@ while game:
 
     pressedkeys = pygame.key.get_pressed()
 
+    #! === Update === !#
     if not 'np' in mods:
         if boost_tick + 500 > tick:
             player.update(pressedkeys, 1)
@@ -227,6 +238,7 @@ while game:
 
     enemy.update(player)
     
+    #! === Speed === !#
     if tick % 50 == 0 and random.randint(1, 10) > 6:
         enemy.speed += 1
         if not debug and enemy.speed % 10 == 0:
@@ -253,6 +265,7 @@ while game:
             if not debug and player.speed % 5 == 0:
                 print(stick + 'Player speed is now ' + str(player.speed) + ' pixels per tick!')
 
+    #! === Display === !#
     pygame.display.update()
     
     if debug:
@@ -275,6 +288,7 @@ while game:
         print('SLOWDOWNTICK: ' + str(slowdown_tick))
         print('-')
 
+    #! === Tick === !#
     if slowdown_tick + 100 > tick:
         if 'sf' in mods:
             time.sleep(0.01)
@@ -290,6 +304,7 @@ while game:
         else:
             time.sleep(0.01)
 
+#! === Score === !#
 score = int(tick / 100)
 if 'sf' in mods:
     score = score * 2
@@ -302,6 +317,7 @@ elif 'tg' in mods:
 if 'eg' in mods:
     score = int(score * 1.5)
 
+#! === Exit === !#
 if debug:
     print('GAME END TICK: ' + str(tick))
     print('EXIT CODE: ' + exitc)
