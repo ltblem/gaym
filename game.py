@@ -16,7 +16,8 @@ slowdown_readymessageon = 1
 #! === User Setup === !#
 print('\nMake sure this console is visible during gameplay.')
 print('Use WASD to move, ESC to quit, E to boost, Q to slow time and F to print the current tick.')
-scrw, scrh = input('Enter width [1920]: '), input('Enter height [1080]: ')
+scrw = input('Enter width [1920]: ')
+scrh = input('Enter height [1080]: ')
 print('Add modifiers here, seperated by spaces, or press enter to continue.')
 print(' superfast (sf): runs at 1000 tps instead of 100.\n superslow (ss): runs at 10 tps instead of 100.\n debug (db): prints debug info instead of game messages.\n bigglitches (bg): makes glitches 5x bigger.\n massiveglitches (mg): makes glitches 10x bigger.\n extraglitch (eg): adds an extra glitch at the start.\n tinyglitches (tg): makes glitches 10x smaller.\n noplayer (np): removes the player, for some reason.')
 mods = input('[sf, ss, db, bg, mg, tg, eg, np]: ')
@@ -32,7 +33,8 @@ if 'db' in mods:
 if scrw == '':
     scrw = 1920
 else:
-    srcw = int(scrw)
+    scrw = int(scrw)
+
 if scrh == '':
     scrh = 1080
 else:
