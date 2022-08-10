@@ -12,14 +12,14 @@ boost_tick = -501
 slowdown_tick = -1001
 boost_readymessageon = 1
 slowdown_readymessageon = 1
+rendertext = ['Glitch Kitten','Glitch Kitten', 'Glitch Kitten']
 
 #! === User Setup === !#
-print('\nMake sure this console is visible during gameplay.')
-print('Use WASD to move, ESC to quit, E to boost, Q to slow time and F to print the current tick.')
+print('\nUse WASD to move, ESC to quit, E to boost, Q to slow time and F to print the current tick.')
 scrw = input('Enter width [1920]: ')
 scrh = input('Enter height [1080]: ')
 print('Add modifiers here, seperated by spaces, or press enter to continue.')
-print(' superfast (sf): runs at 1000 tps instead of 100.\n superslow (ss): runs at 10 tps instead of 100.\n debug (db): prints debug info instead of game messages.\n bigglitches (bg): makes glitches 5x bigger.\n massiveglitches (mg): makes glitches 10x bigger.\n extraglitch (eg): adds an extra glitch at the start.\n tinyglitches (tg): makes glitches 10x smaller.\n noplayer (np): removes the player, for some reason.')
+print(' superfast (sf): runs at 1000 tps instead of 100.\n superslow (ss): runs at 10 tps instead of 100.\n debug (db): prints debug info, may cause lag.\n bigglitches (bg): makes glitches 5x bigger.\n massiveglitches (mg): makes glitches 10x bigger.\n extraglitch (eg): adds an extra glitch at the start.\n tinyglitches (tg): makes glitches 10x smaller.\n noplayer (np): removes the player, for some reason.')
 mods = input('[sf, ss, db, bg, mg, tg, eg, np]: ')
 mods = mods.split()
 if 'sf' in mods:
@@ -127,6 +127,14 @@ class evil_entity(pygame.sprite.Sprite):
             self.rect.bottom = scrh
             
         self.surf.fill((random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
+        
+#! === Text Setup === !#
+def alert(text):
+    global rendertext
+    if len(rendertext) > 2:
+        rendertext.pop(0)
+    rendertext.append(text)
+    
 
 #! === Game setup === !#
 if not 'np' in mods:
@@ -139,6 +147,8 @@ if 'eg' in mods:
 
 game = 1
 tick = 0
+
+font = pygame.font.Font('freesansbold.ttf', 32)
 
 if debug: print('GAME START TICK: ' + str(tick))
 
@@ -161,6 +171,22 @@ while game:
         bluecolor = 0
     window.fill((redcolor, 0, bluecolor))
     
+    #! === Text === !#
+    text1 = font.render(rendertext[0], True, (255, 255, 255))
+    text1rect = text1.get_rect()
+    text1rect.center = (int(scrw / 2), int(scrh / 2) - 32)
+    window.blit(text1, text1rect)
+    
+    text2 = font.render(rendertext[1], True, (255, 255, 255))
+    text2rect = text2.get_rect()
+    text2rect.center = (int(scrw / 2), int(scrh / 2))
+    window.blit(text2, text2rect)
+    
+    text3 = font.render(rendertext[2], True, (255, 255, 255))
+    text3rect = text3.get_rect()
+    text3rect.center = (int(scrw / 2), int(scrh / 2) + 32)
+    window.blit(text3, text3rect)
+    
     #! === Blit === !#
     if not 'np' in mods:
         window.blit(player.surf, player.rect)
@@ -173,12 +199,12 @@ while game:
         window.blit(enemy3.surf, enemy3.rect)
     
     #! === Powerups === !#
-    if boost_tick + 1000 < tick and boost_readymessageon and not debug:
-        print(stick + 'BOOST READY')
+    if boost_tick + 1000 < tick and boost_readymessageon:
+        alert(stick + 'BOOST READY')
         boost_readymessageon = 0
         
-    if slowdown_tick + 2000 < tick and slowdown_readymessageon and not debug:
-        print(stick + 'SLOWDOWN READY')
+    if slowdown_tick + 2000 < tick and slowdown_readymessageon:
+        alert(stick + 'SLOWDOWN READY')
         slowdown_readymessageon = 0
     
     #! === Input === !#
@@ -193,24 +219,19 @@ while game:
             elif event.key == pygame.K_e:
                 if boost_tick + 1000 < tick:
                     boost_tick = tick
-                    if not debug:
-                        print(stick + 'BOOST!')
+                    alert(stick + 'BOOST!')
                     boost_readymessageon = 1
                 else:
-                    if not debug:
-                        print(stick + 'BOOST NOT READY')
+                    alert(stick + 'BOOST NOT READY')
             elif event.key == pygame.K_f:
-                if not debug:
-                    print(stick + 'Ping!')
+                alert(stick + 'Ping!')
             elif event.key == pygame.K_q:
                 if slowdown_tick + 2000 < tick:
                     slowdown_tick = tick
-                    if not debug:
-                        print(stick + 'SLOWDOWN!')
+                    alert(stick + 'SLOWDOWN!')
                     slowdown_readymessageon = 1
                 else:
-                    if not debug:
-                        print(stick + 'SLOWDOWN NOT READY')
+                    alert(stick + 'SLOWDOWN NOT READY')
 
     pressedkeys = pygame.key.get_pressed()
 
@@ -223,13 +244,11 @@ while game:
         
     if tick == 5_000:
         enemy2 = evil_entity()
-        if not debug:
-            print(stick + 'A new enemy has spawned!')
+        alert(stick + 'A new enemy has spawned!')
             
     if tick == 10_000:
         enemy4 = evil_entity()
-        if not debug:
-            print(stick + 'A new enemy has spawned!')
+        alert(stick + 'A new enemy has spawned!')
         
     if tick > 4999:
         enemy2.update(player)
@@ -243,29 +262,29 @@ while game:
     #! === Speed === !#
     if tick % 50 == 0 and random.randint(1, 10) > 6:
         enemy.speed += 1
-        if not debug and enemy.speed % 10 == 0:
-            print(stick + 'Glitch speed is now ' + str(enemy.speed) + ' pixels per tick!')
+        if enemy.speed % 10 == 0:
+            alert(stick + 'Glitch speed is now ' + str(enemy.speed) + ' pixels per tick!')
             
     if tick % 50 == 0 and random.randint(1, 10) > 6 and 'eg' in mods:
         enemy3.speed += 1
-        if not debug and enemy.speed % 10 == 0:
-            print(stick + 'Glitch2 speed is now ' + str(enemy.speed) + ' pixels per tick!')
+        if enemy.speed % 10 == 0:
+            alert(stick + 'Glitch2 speed is now ' + str(enemy.speed) + ' pixels per tick!')
             
     if tick % 50 == 0 and random.randint(1, 10) > 4 and tick > 4999:
         enemy2.speed += 1
-        if not debug and enemy2.speed % 10 == 0:
-            print(stick + 'New glitch speed is now ' + str(enemy2.speed) + ' pixels per tick!')
+        if enemy2.speed % 10 == 0:
+            alert(stick + 'New glitch speed is now ' + str(enemy2.speed) + ' pixels per tick!')
             
     if tick % 50 == 0 and random.randint(1, 10) > 2 and tick > 9999:
         enemy4.speed += 1
-        if not debug and enemy4.speed % 10 == 0:
-            print(stick + 'New new glitch speed is now ' + str(enemy4.speed) + ' pixels per tick!')
+        if enemy4.speed % 10 == 0:
+            alert(stick + 'New new glitch speed is now ' + str(enemy4.speed) + ' pixels per tick!')
         
     if not 'np' in mods:
         if tick % 1000 == 0 and random.randint(1, 10) > 4:
             player.speed += 1
-            if not debug and player.speed % 5 == 0:
-                print(stick + 'Player speed is now ' + str(player.speed) + ' pixels per tick!')
+            if player.speed % 5 == 0:
+                alert(stick + 'Player speed is now ' + str(player.speed) + ' pixels per tick!')
 
     #! === Display === !#
     pygame.display.update()

@@ -9,7 +9,7 @@ Instructions:
 Modifiers:
 - superfast (sf): runs the game at 1000 tps instead of 100
 - superslow (ss): runs the game at 10 tps instead of 100
-- debug (db): prints debug info to the console instead of game messages
+- debug (db): prints debug info to the console, which may cause the tps to drop
 - bigglitches (bg): makes glitches 5x bigger
 - massiveglitches (mg): makes glitches 10x bigger
 - tinyglitches (tg): makes glitches 10x smaller
