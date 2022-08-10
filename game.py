@@ -12,7 +12,7 @@ boost_tick = -501
 slowdown_tick = -1001
 boost_readymessageon = 1
 slowdown_readymessageon = 1
-rendertext = ['Glitch Kitten','Glitch Kitten', 'Glitch Kitten']
+rendertext = ['Ready!','Set!','Go!']
 
 #! === User Setup === !#
 print('\nUse WASD to move, ESC to quit, E to boost, Q to slow time and F to print the current tick.')
@@ -281,7 +281,7 @@ while game:
             alert(stick + 'New new glitch speed is now ' + str(enemy4.speed) + ' pixels per tick!')
         
     if not 'np' in mods:
-        if tick % 1000 == 0 and random.randint(1, 10) > 4:
+        if tick % 500 == 0 and random.randint(1, 10) > 7:
             player.speed += 1
             if player.speed % 5 == 0:
                 alert(stick + 'Player speed is now ' + str(player.speed) + ' pixels per tick!')
@@ -357,6 +357,3 @@ else:
     elif exitc == 'user_quit':
         print('Quit.')
         print('Score: ' + str(score))
-        
-
-#
