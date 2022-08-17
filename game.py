@@ -15,12 +15,12 @@ slowdown_readymessageon = 1
 rendertext = ['Ready!','Set!','Go!']
 
 #! === User Setup === !#
-print('\nUse WASD to move, ESC to quit, E to boost, Q to slow time and F to print the current tick.')
+print('\nUse WASD to move, ESC to quit, E to boost, Q to slow time, R to randomly teleport and F to print the current tick.')
 scrw = input('Enter width [1920]: ')
 scrh = input('Enter height [1080]: ')
 print('Add modifiers here, seperated by spaces, or press enter to continue.')
-print(' superfast (sf): runs at 1000 tps instead of 100.\n superslow (ss): runs at 10 tps instead of 100.\n debug (db): prints debug info, may cause lag.\n bigglitches (bg): makes glitches 5x bigger.\n massiveglitches (mg): makes glitches 10x bigger.\n extraglitch (eg): adds an extra glitch at the start.\n tinyglitches (tg): makes glitches 10x smaller.\n noplayer (np): removes the player, for some reason.')
-mods = input('[sf, ss, db, bg, mg, tg, eg, np]: ')
+print(' superfast (sf): runs at 1000 tps instead of 100.\n superslow (ss): runs at 10 tps instead of 100.\n debug (db): prints debug info, may cause lag.\n bigglitches (bg): makes glitches 5x bigger.\n massiveglitches (mg): makes glitches 10x bigger.\n extraglitch (eg): adds an extra glitch at the start.\n tinyglitches (tg): makes glitches 10x smaller.\n noplayer (np): removes the player, for some reason.\n randomteleport (rt): randomly teleports you.')
+mods = input('[sf, ss, db, bg, mg, tg, eg, np, rt]: ')
 mods = mods.split()
 if 'sf' in mods:
     print('You have about 1000 ticks (1 second) until the glitch starts to spread. Good luck.')
@@ -202,7 +202,7 @@ while game:
     if boost_tick + 1000 < tick and boost_readymessageon:
         alert(stick + 'BOOST READY')
         boost_readymessageon = 0
-        
+    
     if slowdown_tick + 2000 < tick and slowdown_readymessageon:
         alert(stick + 'SLOWDOWN READY')
         slowdown_readymessageon = 0
@@ -232,11 +232,17 @@ while game:
                     slowdown_readymessageon = 1
                 else:
                     alert(stick + 'SLOWDOWN NOT READY')
+            elif event.key == pygame.K_r and 'np' not in mods:
+                player.rect.center = (random.randint(0, scrw - 50), random.randint(0, scrh - 50))
 
     pressedkeys = pygame.key.get_pressed()
-
+    
     #! === Update === !#
     if not 'np' in mods:
+        if 'rt' in mods and tick % 10 == 0:
+            if random.randint(1, 3) == 1:
+                player.rect.center = (random.randint(0, scrw - 50), random.randint(0, scrh - 50))
+        
         if boost_tick + 500 > tick:
             player.update(pressedkeys, 1)
         else:
