@@ -334,15 +334,15 @@ while game:
 #! === Score === !#
 score = int(tick / 100)
 if 'sf' in mods:
-    score = score * 2
-if 'mg' in mods:
-    score = int(score * 1.5)
-elif 'bg' in mods:
     score = int(score * 1.25)
+if 'mg' in mods:
+    score = int(score * 1.125)
+elif 'bg' in mods:
+    score = int(score * 1.0625)
 elif 'tg' in mods:
-    score = int(score * 0.85)
+    score = int(score * 0.9375)
 if 'eg' in mods:
-    score = int(score * 1.5)
+    score = int(score * 1.125)
 
 #! === Exit === !#
 if debug:
