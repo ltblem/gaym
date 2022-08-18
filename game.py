@@ -13,6 +13,7 @@ slowdown_tick = -1001
 boost_readymessageon = 1
 slowdown_readymessageon = 1
 rendertext = ['Ready!','Set!','Go!']
+state = 'game'
 
 #! === User Setup === !#
 print('\nUse WASD to move, ESC to quit, E to boost, Q to slow time, R to randomly teleport and F to print the current tick.')
@@ -150,186 +151,190 @@ tick = 0
 
 font = pygame.font.Font('freesansbold.ttf', 32)
 
-if debug: print('GAME START TICK: ' + str(tick))
+if debug:
+    print('GAME START TICK: ' + str(tick))
 
 #! === Main Loop === !#
 while game:
-    tick += 1
-    stick = str(tick) + ': '
-    
-    #! === Colour === !#
-    if (enemy.speed / 4) > 255:
-        redcolor = 255
-    else:
-        redcolor = enemy.speed / 3
-    if not 'np' in mods:
-        if player.speed > 255:
-            bluecolor = 255
+    if state == 'menu':
+        None
+    elif state == 'game':
+        tick += 1
+        stick = str(tick) + ': '
+
+        #! === Colour === !#
+        if (enemy.speed / 4) > 255:
+            redcolor = 255
         else:
-            bluecolor = player.speed
-    else:
-        bluecolor = 0
-    window.fill((redcolor, 0, bluecolor))
-    
-    #! === Text === !#
-    text1 = font.render(rendertext[0], True, (255, 255, 255))
-    text1rect = text1.get_rect()
-    text1rect.center = (int(scrw / 2), int(scrh / 2) - 32)
-    window.blit(text1, text1rect)
-    
-    text2 = font.render(rendertext[1], True, (255, 255, 255))
-    text2rect = text2.get_rect()
-    text2rect.center = (int(scrw / 2), int(scrh / 2))
-    window.blit(text2, text2rect)
-    
-    text3 = font.render(rendertext[2], True, (255, 255, 255))
-    text3rect = text3.get_rect()
-    text3rect.center = (int(scrw / 2), int(scrh / 2) + 32)
-    window.blit(text3, text3rect)
-    
-    #! === Blit === !#
-    if not 'np' in mods:
-        window.blit(player.surf, player.rect)
-    window.blit(enemy.surf, enemy.rect)
-    if tick > 5000:
-        window.blit(enemy2.surf, enemy2.rect)
-    if tick > 10000:
-        window.blit(enemy4.surf, enemy4.rect)
-    if 'eg' in mods:
-        window.blit(enemy3.surf, enemy3.rect)
-    
-    #! === Powerups === !#
-    if boost_tick + 1000 < tick and boost_readymessageon:
-        alert(stick + 'BOOST READY')
-        boost_readymessageon = 0
-    
-    if slowdown_tick + 2000 < tick and slowdown_readymessageon:
-        alert(stick + 'SLOWDOWN READY')
-        slowdown_readymessageon = 0
-    
-    #! === Input === !#
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            game = 0
-            exitc = 'user_quit'
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+            redcolor = enemy.speed / 3
+        if not 'np' in mods:
+            if player.speed > 255:
+                bluecolor = 255
+            else:
+                bluecolor = player.speed
+        else:
+            bluecolor = 0
+        window.fill((redcolor, 0, bluecolor))
+
+        #! === Text === !#
+        text1 = font.render(rendertext[0], True, (255, 255, 255))
+        text1rect = text1.get_rect()
+        text1rect.center = (int(scrw / 2), int(scrh / 2) - 32)
+        window.blit(text1, text1rect)
+
+        text2 = font.render(rendertext[1], True, (255, 255, 255))
+        text2rect = text2.get_rect()
+        text2rect.center = (int(scrw / 2), int(scrh / 2))
+        window.blit(text2, text2rect)
+
+        text3 = font.render(rendertext[2], True, (255, 255, 255))
+        text3rect = text3.get_rect()
+        text3rect.center = (int(scrw / 2), int(scrh / 2) + 32)
+        window.blit(text3, text3rect)
+
+        #! === Blit === !#
+        if not 'np' in mods:
+            window.blit(player.surf, player.rect)
+        window.blit(enemy.surf, enemy.rect)
+        if tick > 5000:
+            window.blit(enemy2.surf, enemy2.rect)
+        if tick > 10000:
+            window.blit(enemy4.surf, enemy4.rect)
+        if 'eg' in mods:
+            window.blit(enemy3.surf, enemy3.rect)
+
+        #! === Powerups === !#
+        if boost_tick + 1000 < tick and boost_readymessageon:
+            alert(stick + 'BOOST READY')
+            boost_readymessageon = 0
+
+        if slowdown_tick + 2000 < tick and slowdown_readymessageon:
+            alert(stick + 'SLOWDOWN READY')
+            slowdown_readymessageon = 0
+
+        #! === Input === !#
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 game = 0
                 exitc = 'user_quit'
-            elif event.key == pygame.K_e:
-                if boost_tick + 1000 < tick:
-                    boost_tick = tick
-                    alert(stick + 'BOOST!')
-                    boost_readymessageon = 1
-                else:
-                    alert(stick + 'BOOST NOT READY')
-            elif event.key == pygame.K_f:
-                alert(stick + 'Ping!')
-            elif event.key == pygame.K_q:
-                if slowdown_tick + 2000 < tick:
-                    slowdown_tick = tick
-                    alert(stick + 'SLOWDOWN!')
-                    slowdown_readymessageon = 1
-                else:
-                    alert(stick + 'SLOWDOWN NOT READY')
-            elif event.key == pygame.K_r and 'np' not in mods:
-                player.rect.center = (random.randint(0, scrw - 50), random.randint(0, scrh - 50))
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    game = 0
+                    exitc = 'user_quit'
+                elif event.key == pygame.K_e:
+                    if boost_tick + 1000 < tick:
+                        boost_tick = tick
+                        alert(stick + 'BOOST!')
+                        boost_readymessageon = 1
+                    else:
+                        alert(stick + 'BOOST NOT READY')
+                elif event.key == pygame.K_f:
+                    alert(stick + 'Ping!')
+                elif event.key == pygame.K_q:
+                    if slowdown_tick + 2000 < tick:
+                        slowdown_tick = tick
+                        alert(stick + 'SLOWDOWN!')
+                        slowdown_readymessageon = 1
+                    else:
+                        alert(stick + 'SLOWDOWN NOT READY')
+                elif event.key == pygame.K_r and 'np' not in mods:
+                    player.rect.center = (random.randint(0, scrw - 50), random.randint(0, scrh - 50))
 
-    pressedkeys = pygame.key.get_pressed()
-    
-    #! === Update === !#
-    if not 'np' in mods:
-        if 'rt' in mods and tick % 10 == 0:
-            if random.randint(1, 3) == 1:
-                player.rect.center = (random.randint(0, scrw - 50), random.randint(0, scrh - 50))
-        
-        if boost_tick + 500 > tick:
-            player.update(pressedkeys, 1)
-        else:
-            player.update(pressedkeys, 0)
-        
-    if tick == 5_000:
-        enemy2 = evil_entity()
-        alert(stick + 'A new enemy has spawned!')
-            
-    if tick == 10_000:
-        enemy4 = evil_entity()
-        alert(stick + 'A new enemy has spawned!')
-        
-    if tick > 4999:
-        enemy2.update(player)
-    if tick > 9999:
-        enemy4.update(player)
-    if 'eg' in mods:
-        enemy3.update(player)
+        pressedkeys = pygame.key.get_pressed()
 
-    enemy.update(player)
-    
-    #! === Speed === !#
-    if tick % 50 == 0 and random.randint(1, 10) > 6:
-        enemy.speed += 1
-        if enemy.speed % 10 == 0:
-            alert(stick + 'Glitch speed is now ' + str(enemy.speed) + ' pixels per tick!')
-            
-    if tick % 50 == 0 and random.randint(1, 10) > 6 and 'eg' in mods:
-        enemy3.speed += 1
-        if enemy.speed % 10 == 0:
-            alert(stick + 'Glitch2 speed is now ' + str(enemy.speed) + ' pixels per tick!')
-            
-    if tick % 50 == 0 and random.randint(1, 10) > 4 and tick > 4999:
-        enemy2.speed += 1
-        if enemy2.speed % 10 == 0:
-            alert(stick + 'New glitch speed is now ' + str(enemy2.speed) + ' pixels per tick!')
-            
-    if tick % 50 == 0 and random.randint(1, 10) > 2 and tick > 9999:
-        enemy4.speed += 1
-        if enemy4.speed % 10 == 0:
-            alert(stick + 'New new glitch speed is now ' + str(enemy4.speed) + ' pixels per tick!')
-        
-    if not 'np' in mods:
-        if tick % 500 == 0 and random.randint(1, 10) > 7:
-            player.speed += 1
-            if player.speed % 5 == 0:
-                alert(stick + 'Player speed is now ' + str(player.speed) + ' pixels per tick!')
-
-    #! === Display === !#
-    pygame.display.update()
-    
-    if debug:
-        print('TICK ' + str(tick) + ':')
-        print('ENEMY: ' + str(enemy.rect).replace('<rect(', '').replace(')>', '').replace(', 10, 10', ''))
-        print('ENEMYSPEED: ' + str(enemy.speed))
-        if tick > 4999:
-            print('ENEMY2: ' + str(enemy2.rect).replace('<rect(', '').replace(')>', '').replace(', 10, 10', ''))
-            print('ENEMY2SPEED: ' + str(enemy2.speed))
-        if 'eg' in mods:
-            print('ENEMY3: ' + str(enemy3.rect).replace('<rect(', '').replace(')>', '').replace(', 10, 10', ''))
-            print('ENEMY3SPEED: ' + str(enemy3.speed))
-        if tick > 9999:
-            print('ENEMY4: ' + str(enemy4.rect).replace('<rect(', '').replace(')>', '').replace(', 10, 10', ''))
-            print('ENEMY4SPEED: ' + str(enemy4.speed))
+        #! === Update === !#
         if not 'np' in mods:
-            print('PLAYER: ' + str(player.rect).replace('<rect(', '').replace(')>', '').replace(', 50, 50', ''))
-            print('PLAYERSPEED: ' + str(player.speed))
-        print('BOOSTTICK: ' + str(boost_tick))
-        print('SLOWDOWNTICK: ' + str(slowdown_tick))
-        print('-')
+            if 'rt' in mods and tick % 10 == 0:
+                if random.randint(1, 3) == 1:
+                    player.rect.center = (random.randint(0, scrw - 50), random.randint(0, scrh - 50))
 
-    #! === Tick === !#
-    if slowdown_tick + 100 > tick:
-        if 'sf' in mods:
-            time.sleep(0.01)
-        elif 'ss' in mods:
-            time.sleep(1)
+            if boost_tick + 500 > tick:
+                player.update(pressedkeys, 1)
+            else:
+                player.update(pressedkeys, 0)
+
+        if tick == 5_000:
+            enemy2 = evil_entity()
+            alert(stick + 'A new enemy has spawned!')
+
+        if tick == 10_000:
+            enemy4 = evil_entity()
+            alert(stick + 'A new enemy has spawned!')
+
+        if tick > 4999:
+            enemy2.update(player)
+        if tick > 9999:
+            enemy4.update(player)
+        if 'eg' in mods:
+            enemy3.update(player)
+
+        enemy.update(player)
+
+        #! === Speed === !#
+        if tick % 50 == 0 and random.randint(1, 10) > 6:
+            enemy.speed += 1
+            if enemy.speed % 10 == 0:
+                alert(stick + 'Glitch speed is now ' + str(enemy.speed) + ' pixels per tick!')
+
+        if tick % 50 == 0 and random.randint(1, 10) > 6 and 'eg' in mods:
+            enemy3.speed += 1
+            if enemy.speed % 10 == 0:
+                alert(stick + 'Glitch2 speed is now ' + str(enemy.speed) + ' pixels per tick!')
+
+        if tick % 50 == 0 and random.randint(1, 10) > 4 and tick > 4999:
+            enemy2.speed += 1
+            if enemy2.speed % 10 == 0:
+                alert(stick + 'New glitch speed is now ' + str(enemy2.speed) + ' pixels per tick!')
+
+        if tick % 50 == 0 and random.randint(1, 10) > 2 and tick > 9999:
+            enemy4.speed += 1
+            if enemy4.speed % 10 == 0:
+                alert(stick + 'New new glitch speed is now ' + str(enemy4.speed) + ' pixels per tick!')
+
+        if not 'np' in mods:
+            if tick % 500 == 0 and random.randint(1, 10) > 7:
+                player.speed += 1
+                if player.speed % 5 == 0:
+                    alert(stick + 'Player speed is now ' + str(player.speed) + ' pixels per tick!')
+
+        #! === Display === !#
+        pygame.display.update()
+
+        if debug:
+            print('TICK ' + str(tick) + ':')
+            print('ENEMY: ' + str(enemy.rect).replace('<rect(', '').replace(')>', '').replace(', 10, 10', ''))
+            print('ENEMYSPEED: ' + str(enemy.speed))
+            if tick > 4999:
+                print('ENEMY2: ' + str(enemy2.rect).replace('<rect(', '').replace(')>', '').replace(', 10, 10', ''))
+                print('ENEMY2SPEED: ' + str(enemy2.speed))
+            if 'eg' in mods:
+                print('ENEMY3: ' + str(enemy3.rect).replace('<rect(', '').replace(')>', '').replace(', 10, 10', ''))
+                print('ENEMY3SPEED: ' + str(enemy3.speed))
+            if tick > 9999:
+                print('ENEMY4: ' + str(enemy4.rect).replace('<rect(', '').replace(')>', '').replace(', 10, 10', ''))
+                print('ENEMY4SPEED: ' + str(enemy4.speed))
+            if not 'np' in mods:
+                print('PLAYER: ' + str(player.rect).replace('<rect(', '').replace(')>', '').replace(', 50, 50', ''))
+                print('PLAYERSPEED: ' + str(player.speed))
+            print('BOOSTTICK: ' + str(boost_tick))
+            print('SLOWDOWNTICK: ' + str(slowdown_tick))
+            print('-')
+
+        #! === Tick === !#
+        if slowdown_tick + 100 > tick:
+            if 'sf' in mods:
+                time.sleep(0.01)
+            elif 'ss' in mods:
+                time.sleep(1)
+            else:
+                time.sleep(0.1)
         else:
-            time.sleep(0.1)
-    else:
-        if 'sf' in mods:
-            time.sleep(0.001)
-        elif 'ss' in mods:
-            time.sleep(0.1)
-        else:
-            time.sleep(0.01)
+            if 'sf' in mods:
+                time.sleep(0.001)
+            elif 'ss' in mods:
+                time.sleep(0.1)
+            else:
+                time.sleep(0.01)
 
 #! === Score === !#
 score = int(tick / 100)
