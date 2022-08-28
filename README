@@ -1,9 +1,9 @@
 Glitch Kittens is a small game created to help me learn pygame.
 Instructions:
 - Use WASD to move around
-- Use E to activate 'boost', giving you 3x speed for 500 ticks, with a cooldown of 1000 ticks
-- Use Q to activate 'slowdown;, making the game run slower for 100 ticks, with a cooldown of 2000 ticks
-- Use R to teleport to a random position.
+- Use E to activate 'boost', giving you 5x speed
+- Use Q to activate 'slowdown;, making the game run slower
+- Use R to teleport to a random position
 - Press ESC to quit
 - Try to survive for as long as possible!
 

@@ -1,6 +1,9 @@
 # Void Kitten - A LetThereBeLemons creation
 # Liscenced under DONT STEAL MY CODE YOU ASSHOLE (DSMCYA)
 
+#TODO: Make enemies into a list, and add one every 5000 or so ticks.
+#TODO: Implement main menu / pause menu
+
 #! === Import & Init === !#
 import pygame, random, time
 pygame.init()
@@ -9,16 +12,19 @@ pygame.init()
 debug = 0
 exitc = 'error'
 boost_tick = -501
+boost_length = 0
 slowdown_tick = -1001
 boost_readymessageon = 1
 slowdown_readymessageon = 1
 rendertext = ['Ready!','Set!','Go!']
+fullscreen = 0
 state = 'game'
 
 #! === User Setup === !#
 print('\nUse WASD to move, ESC to quit, E to boost, Q to slow time, R to randomly teleport and F to print the current tick.')
-scrw = input('Enter width [1920]: ')
-scrh = input('Enter height [1080]: ')
+print('Hint: For fullscreen, don\'t enter anything.')
+scrw = input('Enter width: ')
+scrh = input('Enter height: ')
 print('Add modifiers here, seperated by spaces, or press enter to continue.')
 print(' superfast (sf): runs at 1000 tps instead of 100.\n superslow (ss): runs at 10 tps instead of 100.\n debug (db): prints debug info, may cause lag.\n bigglitches (bg): makes glitches 5x bigger.\n massiveglitches (mg): makes glitches 10x bigger.\n extraglitch (eg): adds an extra glitch at the start.\n tinyglitches (tg): makes glitches 10x smaller.\n noplayer (np): removes the player, for some reason.\n randomteleport (rt): randomly teleports you.')
 mods = input('[sf, ss, db, bg, mg, tg, eg, np, rt]: ')
@@ -32,16 +38,24 @@ if 'db' in mods:
 
 #! === Screen Setup === !#
 if scrw == '':
-    scrw = 1920
+    scrw = pygame.display.Info().current_w
+    fullscreen = 1
 else:
     scrw = int(scrw)
+    fullscreen = 0
 
 if scrh == '':
-    scrh = 1080
+    scrh = pygame.display.Info().current_h
+    fullscreen = 1
 else:
     scrh = int(scrh)
+    fullscreen = 0
 
-window = pygame.display.set_mode((scrw, scrh))
+if fullscreen:
+    window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+else:
+    window = pygame.display.set_mode((scrw, scrh))
+
 pygame.display.set_caption('Glitch Kitten')
 
 #! === Classes === !#
@@ -163,10 +177,10 @@ while game:
         stick = str(tick) + ': '
 
         #! === Colour === !#
-        if (enemy.speed / 4) > 255:
+        if (enemy.speed / 2) > 255:
             redcolor = 255
         else:
-            redcolor = enemy.speed / 3
+            redcolor = enemy.speed / 2
         if not 'np' in mods:
             if player.speed > 255:
                 bluecolor = 255
@@ -204,7 +218,7 @@ while game:
             window.blit(enemy3.surf, enemy3.rect)
 
         #! === Powerups === !#
-        if boost_tick + 1000 < tick and boost_readymessageon:
+        if boost_tick + boost_length + 1000 < tick and boost_readymessageon:
             alert(stick + 'BOOST READY')
             boost_readymessageon = 0
 
@@ -222,8 +236,9 @@ while game:
                     game = 0
                     exitc = 'user_quit'
                 elif event.key == pygame.K_e:
-                    if boost_tick + 1000 < tick:
+                    if boost_tick + boost_length + 1000 < tick:
                         boost_tick = tick
+                        boost_length = tick / 10
                         alert(stick + 'BOOST!')
                         boost_readymessageon = 1
                     else:
@@ -248,18 +263,18 @@ while game:
                 if random.randint(1, 3) == 1:
                     player.rect.center = (random.randint(0, scrw - 50), random.randint(0, scrh - 50))
 
-            if boost_tick + 500 > tick:
+            if boost_tick + boost_length > tick:
                 player.update(pressedkeys, 1)
             else:
                 player.update(pressedkeys, 0)
 
         if tick == 5_000:
             enemy2 = evil_entity()
-            alert(stick + 'A new enemy has spawned!')
+            alert(stick + 'A new glitch has appeared!')
 
         if tick == 10_000:
             enemy4 = evil_entity()
-            alert(stick + 'A new enemy has spawned!')
+            alert(stick + 'A new glitch has appeared!')
 
         if tick > 4999:
             enemy2.update(player)
@@ -341,13 +356,13 @@ score = int(tick / 100)
 if 'sf' in mods:
     score = int(score * 1.25)
 if 'mg' in mods:
-    score = int(score * 1.125)
+    score = int(score * 1.1)
 elif 'bg' in mods:
-    score = int(score * 1.0625)
+    score = int(score * 1.02)
 elif 'tg' in mods:
-    score = int(score * 0.9375)
+    score = int(score * 0.9)
 if 'eg' in mods:
-    score = int(score * 1.125)
+    score = int(score * 1.1)
 
 #! === Exit === !#
 if debug:
