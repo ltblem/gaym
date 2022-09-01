@@ -2,7 +2,9 @@
 # Liscenced under DONT STEAL MY CODE YOU ASSHOLE (DSMCYA)
 
 #TODO: Make enemies into a list, and add one every 5000 or so ticks.
-#TODO: Implement main menu / pause menu
+#TODO: Add to main menu:
+#TODO:    Options for screen res & fullscreen
+#TODO:    Mod menu for configuring mods
 
 #! === Import & Init === !#
 import pygame, random, time
@@ -18,10 +20,12 @@ boost_readymessageon = 1
 slowdown_readymessageon = 1
 rendertext = ['Ready!','Set!','Go!']
 fullscreen = 0
-state = 'game'
+state = 'menu'
+alertflush = 0
+menutype = 'start'
 
 #! === User Setup === !#
-print('\nUse WASD to move, ESC to quit, E to boost, Q to slow time, R to randomly teleport and F to print the current tick.')
+print('\nUse WASD to move, ESC to pause, E to boost, Q to slow time, R to randomly teleport and F to print the current tick.')
 print('Hint: For fullscreen, don\'t enter anything.')
 scrw = input('Enter width: ')
 scrh = input('Enter height: ')
@@ -29,10 +33,6 @@ print('Add modifiers here, seperated by spaces, or press enter to continue.')
 print(' superfast (sf): runs at 1000 tps instead of 100.\n superslow (ss): runs at 10 tps instead of 100.\n debug (db): prints debug info, may cause lag.\n bigglitches (bg): makes glitches 5x bigger.\n massiveglitches (mg): makes glitches 10x bigger.\n extraglitch (eg): adds an extra glitch at the start.\n tinyglitches (tg): makes glitches 10x smaller.\n noplayer (np): removes the player, for some reason.\n randomteleport (rt): randomly teleports you.')
 mods = input('[sf, ss, db, bg, mg, tg, eg, np, rt]: ')
 mods = mods.split()
-if 'sf' in mods:
-    print('You have about 1000 ticks (1 second) until the glitch starts to spread. Good luck.')
-else:
-    print('You have about 1000 ticks (10 seconds) until the glitch starts to spread. Good luck.')
 if 'db' in mods:
     debug = 1
 
@@ -149,7 +149,60 @@ def alert(text):
     if len(rendertext) > 2:
         rendertext.pop(0)
     rendertext.append(text)
-    
+
+font = pygame.font.Font('freesansbold.ttf', 32)
+
+#! === Menu setup === !#
+menu_options_start = ['Start', 'Quit']
+menu_options_pause = ['Resume', 'Quit']
+menu_selection = 0
+
+def menu_update(menu_type, menu_action):
+    global menu_selection; global menu_options_start; global menu_options_pause
+    global debug; global state; global game; global alertflush; global exitc
+    if menu_action == 'up':
+        if debug:
+            print('Menu up recieved')
+        if menu_selection <= 0:
+            pass
+        else:
+            menu_selection -= 1
+    elif menu_action == 'down':
+        if debug:
+            print('Menu down recieved')
+        if menu_selection >= 1:
+            pass
+        else:
+            menu_selection += 1
+    elif menu_action == 'select':
+        if debug:
+            print('Menu select recieved')
+        if menu_selection == 0:
+            alertflush = 1
+            state = 'game'
+        elif menu_selection == 1:
+            exitc = 'user_quit'
+            game = 0
+
+    if menu_type == 'start':
+        if menu_selection == 0:
+            alert('[[ ' + menu_options_start[0] + ' ]]')
+            alert(menu_options_start[1])
+            alert('')
+        elif menu_selection == 1:
+            alert(menu_options_start[0])
+            alert('[[ ' + menu_options_start[1] + ' ]]')
+            alert('')
+            
+    if menu_type == 'pause':
+        if menu_selection == 0:
+            alert('[[ ' + menu_options_pause[0] + ' ]]')
+            alert(menu_options_pause[1])
+            alert('')
+        elif menu_selection == 1:
+            alert(menu_options_pause[0])
+            alert('[[ ' + menu_options_pause[1] + ' ]]')
+            alert('')
 
 #! === Game setup === !#
 if not 'np' in mods:
@@ -163,16 +216,110 @@ if 'eg' in mods:
 game = 1
 tick = 0
 
-font = pygame.font.Font('freesansbold.ttf', 32)
+redcolor = 0
+bluecolor = 0
+
+mredcolor = 0
+mgreencolor = 0
+mbluecolor = 0
+colorvariety = 1
 
 if debug:
     print('GAME START TICK: ' + str(tick))
 
 #! === Main Loop === !#
 while game:
+    if alertflush:
+        alert('')
+        alert('')
+        alert('')
+        alertflush = 0
+
     if state == 'menu':
-        None
+        #! === Color === !#
+        mredcolor = random.randint(int(mredcolor) - int(colorvariety), int(mredcolor) + int(colorvariety))
+        if mredcolor < 0:
+            mredcolor = 0
+        elif mredcolor > 255:
+            mredcolor = 255
+        mgreencolor = random.randint(int(mgreencolor) - int(colorvariety), int(mgreencolor) + int(colorvariety))
+        if mgreencolor < 0:
+            mgreencolor = 0
+        elif mgreencolor > 255:
+            mgreencolor = 255
+        mbluecolor = random.randint(int(mbluecolor) - int(colorvariety), int(mbluecolor) + int(colorvariety))
+        if mbluecolor < 0:
+            mbluecolor = 0
+        elif mbluecolor > 255:
+            mbluecolor = 255
+            
+        mredcolor, mbluecolor, mgreencolor = int(mredcolor), int(mbluecolor), int(mgreencolor)
+
+        if debug:
+            #print(redcolor, greencolor, bluecolor)
+            pass
+        #* Disabled, it's annoying. Feel free to re-enable.
+
+        window.fill((mredcolor, mgreencolor, mbluecolor))
+        
+        #! === Text === !#
+        text1 = font.render(rendertext[0], True, (255, 255, 255))
+        text1rect = text1.get_rect()
+        text1rect.center = (int(scrw / 2), int(scrh / 2) - 32)
+        window.blit(text1, text1rect)
+
+        text2 = font.render(rendertext[1], True, (255, 255, 255))
+        text2rect = text2.get_rect()
+        text2rect.center = (int(scrw / 2), int(scrh / 2))
+        window.blit(text2, text2rect)
+
+        text3 = font.render(rendertext[2], True, (255, 255, 255))
+        text3rect = text3.get_rect()
+        text3rect.center = (int(scrw / 2), int(scrh / 2) + 32)
+        window.blit(text3, text3rect)
+
+        #! === Input === !#
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game = 0
+                exitc = 'user_quit'
+                menu_update(menutype, 'None')
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    game = 0
+                    exitc = 'user_quit'
+                    menu_update(menutype, 'None')
+                    
+                elif event.key == pygame.K_w:
+                    menu_update(menutype, 'up')
+                    if debug:
+                        print('Menu up registered')
+                elif event.key == pygame.K_s:
+                    menu_update(menutype, 'down')
+                    if debug:
+                        print('Menu down registered')
+                elif event.key == pygame.K_SPACE:
+                    menu_update(menutype, 'select')
+                    if debug:
+                        print('Menu select registered')
+                elif event.key == pygame.K_f and debug:
+                    print('Selection: ' + str(menu_selection))
+                    menu_update(menutype, 'None')
+                else:
+                    menu_update(menutype, 'None')
+            else:
+                menu_update(menutype, 'None')
+                    
+        #! === Display === !#
+        pygame.display.update()
+            
+        #! === Wait === !#
+        time.sleep(0.01)
+        
+
     elif state == 'game':
+        if menutype == 'start':
+            menutype = 'pause'
         tick += 1
         stick = str(tick) + ': '
 
@@ -188,7 +335,7 @@ while game:
                 bluecolor = player.speed
         else:
             bluecolor = 0
-        window.fill((redcolor, 0, bluecolor))
+        window.fill((int(redcolor), 0, int(bluecolor)))
 
         #! === Text === !#
         text1 = font.render(rendertext[0], True, (255, 255, 255))
@@ -233,8 +380,7 @@ while game:
                 exitc = 'user_quit'
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    game = 0
-                    exitc = 'user_quit'
+                    state = 'menu'
                 elif event.key == pygame.K_e:
                     if boost_tick + boost_length + 1000 < tick:
                         boost_tick = tick
