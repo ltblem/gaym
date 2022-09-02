@@ -149,7 +149,7 @@ class evil_entity(pygame.sprite.Sprite):
         self.surf.fill((random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
 
 
-# ! === Text Setup === !#
+#! === Text Setup === !#
 def alert(text: str) -> None:
     global rendertext
     if len(rendertext) > 2:
