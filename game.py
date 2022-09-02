@@ -18,11 +18,14 @@ boost_length = 0
 slowdown_tick = -1001
 boost_readymessageon = 1
 slowdown_readymessageon = 1
-rendertext = ['Ready!','Set!','Go!']
+rendertext = ['Ready!', 'Set!', 'Go!']
 fullscreen = 0
 state = 'menu'
 alertflush = 0
 menutype = 'start'
+enemy2 = None
+enemy3 = None
+enemy4 = None
 
 #! === User Setup === !#
 print('\nUse WASD to move, ESC to pause, E to boost, Q to slow time, R to randomly teleport and F to print the current tick.')
@@ -58,9 +61,10 @@ else:
 
 pygame.display.set_caption('Glitch Kitten')
 
+
 #! === Classes === !#
 class controllable_entity(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self) -> None:
         super(controllable_entity, self).__init__()
         self.size = (50, 50)
         self.image = 'playercat_50x50.jpg'
@@ -69,7 +73,7 @@ class controllable_entity(pygame.sprite.Sprite):
         self.surf.blit(pygame.image.load(self.image), (0, 0))
         self.rect = self.surf.get_rect()
 
-    def update(self, key, boost):
+    def update(self, key, boost: int) -> None:
         if boost:
             if key[pygame.K_w]:
                 self.rect.move_ip(0, -self.speed * 5)
@@ -88,7 +92,7 @@ class controllable_entity(pygame.sprite.Sprite):
                 self.rect.move_ip(-self.speed, 0)
             if key[pygame.K_d]:
                 self.rect.move_ip(self.speed, 0)
-            
+
         if self.rect.left < 0:
             self.rect.left = 0
         if self.rect.right > scrw:
@@ -98,8 +102,9 @@ class controllable_entity(pygame.sprite.Sprite):
         if self.rect.bottom > scrh:
             self.rect.bottom = scrh
 
+
 class evil_entity(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self) -> None:
         super(evil_entity, self).__init__()
         if 'mg' in mods:
             self.size = (100, 100)
@@ -122,16 +127,16 @@ class evil_entity(pygame.sprite.Sprite):
         else:
             self.rect.center = (scrw - 10, scrh - 10)
 
-    def update(self, player):
-        if player:
-            if self.rect.colliderect(player.rect):
+    def update(self, fplayer: controllable_entity) -> None:
+        if fplayer:
+            if self.rect.colliderect(fplayer.rect):
                 global game, exitc
                 game = 0
                 exitc = 'enemy_collision'
-            
+
             else:
                 self.rect.move_ip(random.randint(-self.speed, self.speed), random.randint(-self.speed, self.speed))
-            
+
         if self.rect.left < 0:
             self.rect.left = 0
         if self.rect.right > scrw:
@@ -140,15 +145,17 @@ class evil_entity(pygame.sprite.Sprite):
             self.rect.top = 0
         if self.rect.bottom > scrh:
             self.rect.bottom = scrh
-            
+
         self.surf.fill((random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
-        
-#! === Text Setup === !#
-def alert(text):
+
+
+# ! === Text Setup === !#
+def alert(text: str) -> None:
     global rendertext
     if len(rendertext) > 2:
         rendertext.pop(0)
     rendertext.append(text)
+
 
 font = pygame.font.Font('freesansbold.ttf', 32)
 
@@ -157,9 +164,16 @@ menu_options_start = ['Start', 'Quit']
 menu_options_pause = ['Resume', 'Quit']
 menu_selection = 0
 
-def menu_update(menu_type, menu_action):
-    global menu_selection; global menu_options_start; global menu_options_pause
-    global debug; global state; global game; global alertflush; global exitc
+
+def menu_update(menu_type: str, menu_action: str) -> None:
+    global menu_selection
+    global menu_options_start
+    global menu_options_pause
+    global debug
+    global state
+    global game
+    global alertflush
+    global exitc
     if menu_action == 'up':
         if debug:
             print('Menu up recieved')
@@ -193,7 +207,7 @@ def menu_update(menu_type, menu_action):
             alert(menu_options_start[0])
             alert('[[ ' + menu_options_start[1] + ' ]]')
             alert('')
-            
+
     if menu_type == 'pause':
         if menu_selection == 0:
             alert('[[ ' + menu_options_pause[0] + ' ]]')
@@ -203,6 +217,7 @@ def menu_update(menu_type, menu_action):
             alert(menu_options_pause[0])
             alert('[[ ' + menu_options_pause[1] + ' ]]')
             alert('')
+
 
 #! === Game setup === !#
 if not 'np' in mods:
@@ -252,7 +267,7 @@ while game:
             mbluecolor = 0
         elif mbluecolor > 255:
             mbluecolor = 255
-            
+
         mredcolor, mbluecolor, mgreencolor = int(mredcolor), int(mbluecolor), int(mgreencolor)
 
         if debug:
@@ -261,7 +276,7 @@ while game:
         #* Disabled, it's annoying. Feel free to re-enable.
 
         window.fill((mredcolor, mgreencolor, mbluecolor))
-        
+
         #! === Text === !#
         text1 = font.render(rendertext[0], True, (255, 255, 255))
         text1rect = text1.get_rect()
@@ -289,7 +304,7 @@ while game:
                     game = 0
                     exitc = 'user_quit'
                     menu_update(menutype, 'None')
-                    
+
                 elif event.key == pygame.K_w:
                     menu_update(menutype, 'up')
                     if debug:
@@ -309,13 +324,13 @@ while game:
                     menu_update(menutype, 'None')
             else:
                 menu_update(menutype, 'None')
-                    
+
         #! === Display === !#
         pygame.display.update()
-            
+
         #! === Wait === !#
         time.sleep(0.01)
-        
+
 
     elif state == 'game':
         if menutype == 'start':
@@ -517,15 +532,15 @@ if debug:
     print('SCORE: ' + str(score))
 else:
     print()
-    
+
     if exitc == 'enemy_collision':
         print('You lost.')
         print('Score: ' + str(score))
-        
+
     elif exitc == 'error':
         print('Error, quit.')
         print('Score: ' + str(score))
-        
+
     elif exitc == 'user_quit':
         print('Quit.')
         print('Score: ' + str(score))
