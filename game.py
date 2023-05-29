@@ -513,9 +513,10 @@ while game:
                 time.sleep(0.01)
 
 #! === Score === !#
-score = int(tick / 100)
+screen_size = int(scrw * scrh)
+score = int((tick * 20_736) / screen_size)
 if 'sf' in mods:
-    score = int(score * 1.25)
+    score = int(score * 1.2)
 if 'mg' in mods:
     score = int(score * 1.1)
 elif 'bg' in mods:
