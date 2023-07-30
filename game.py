@@ -28,7 +28,7 @@ enemy3 = None
 enemy4 = None
 
 #! === User Setup === !#
-print('\nUse WASD to move, ESC to pause, E to boost, Q to slow time, R to randomly teleport and F to print the current tick.')
+print('\nUse WASD to move, ESC to pause, E to boost, Q to slow time, R to randomly teleport and F to print the current ticks per second.')
 print('Hint: For fullscreen, don\'t enter anything.')
 scrw = input('Enter width: ')
 scrh = input('Enter height: ')
@@ -231,6 +231,10 @@ if 'eg' in mods:
 game = 1
 tick = 0
 
+lastSecond = time.time()
+ticksInLastSecond = 0
+tps = 0
+
 redcolor = 0
 bluecolor = 0
 
@@ -244,6 +248,7 @@ if debug:
 
 #! === Main Loop === !#
 while game:
+
     if alertflush:
         alert('')
         alert('')
@@ -333,6 +338,14 @@ while game:
 
 
     elif state == 'game':
+
+        if time.time() - 1 >= lastSecond:
+            tps = ticksInLastSecond
+            ticksInLastSecond = 0
+            lastSecond = time.time()
+        else:
+            ticksInLastSecond += 1
+
         if menutype == 'start':
             menutype = 'pause'
         tick += 1
@@ -405,7 +418,7 @@ while game:
                     else:
                         alert(stick + 'BOOST NOT READY')
                 elif event.key == pygame.K_f:
-                    alert(stick + 'Ping!')
+                    alert(stick + 'TPS: ' + str(tps))
                 elif event.key == pygame.K_q:
                     if slowdown_tick + 2000 < tick:
                         slowdown_tick = tick
@@ -478,6 +491,7 @@ while game:
 
         if debug:
             print('TICK ' + str(tick) + ':')
+            print('TPS: ' + str(tps))
             print('ENEMY: ' + str(enemy.rect).replace('<rect(', '').replace(')>', '').replace(', 10, 10', ''))
             print('ENEMYSPEED: ' + str(enemy.speed))
             if tick > 4999:
