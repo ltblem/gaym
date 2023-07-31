@@ -33,7 +33,7 @@ print('Hint: For fullscreen, don\'t enter anything.')
 scrw = input('Enter width: ')
 scrh = input('Enter height: ')
 print('Add modifiers here, seperated by spaces, or press enter to continue.')
-print(' superfast (sf): runs at 1000 tps instead of 100.\n superslow (ss): runs at 10 tps instead of 100.\n debug (db): prints debug info, may cause lag.\n bigglitches (bg): makes glitches 5x bigger.\n massiveglitches (mg): makes glitches 10x bigger.\n extraglitch (eg): adds an extra glitch at the start.\n tinyglitches (tg): makes glitches 10x smaller.\n noplayer (np): removes the player, for some reason.\n randomteleport (rt): randomly teleports you.')
+print(' superfast (sf): runs at 1000 tps instead of 100.\n ultrafast (uf): runs the game at unlimited tps.\n superslow (ss): runs at 10 tps instead of 100.\n debug (db): prints debug info, may cause lag.\n bigglitches (bg): makes glitches 5x bigger.\n massiveglitches (mg): makes glitches 10x bigger.\n extraglitch (eg): adds an extra glitch at the start.\n tinyglitches (tg): makes glitches 10x smaller.\n noplayer (np): removes the player, for some reason.\n randomteleport (rt): randomly teleports you.')
 mods = input('[sf, ss, db, bg, mg, tg, eg, np, rt]: ')
 mods = mods.split()
 if 'db' in mods:
@@ -342,7 +342,7 @@ while game:
         if (enemy.speed / 2) > 255:
             redcolor = 255
         else:
-            redcolor = enemy.speed / 2
+            redcolor = enemy.speed / 1.8
         if not 'np' in mods:
             if player.speed > 255:
                 bluecolor = 255
@@ -498,7 +498,7 @@ while game:
 
         #! === Tick === !#
         if slowdown_tick + 100 > tick:
-            if 'sf' in mods:
+            if 'sf' in mods or 'uf' in mods:
                 time.sleep(0.01)
             elif 'ss' in mods:
                 time.sleep(1)
@@ -507,6 +507,8 @@ while game:
         else:
             if 'sf' in mods:
                 time.sleep(0.001)
+            elif 'uf' in mods:
+                continue
             elif 'ss' in mods:
                 time.sleep(0.1)
             else:
@@ -515,8 +517,10 @@ while game:
 #! === Score === !#
 screen_size = int(scrw * scrh)
 score = int((tick * 20_736) / screen_size)
-if 'sf' in mods:
+if 'sf' in mods or 'uf' in mods:
     score = int(score * 1.2)
+if 'ss' in mods:
+    score = int(score * 0.9)
 if 'mg' in mods:
     score = int(score * 1.1)
 elif 'bg' in mods:

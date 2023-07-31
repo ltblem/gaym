@@ -10,6 +10,7 @@ Instructions:
 
 Modifiers:
 - superfast (sf): runs the game at 1000 tps instead of 100
+- ultrafast (uf): runs the game at unlimited tps
 - superslow (ss): runs the game at 10 tps instead of 100
 - debug (db): prints debug info to the console, which may cause the tps to drop
 - bigglitches (bg): makes glitches 5x bigger
